@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyNest — Study Group Finder</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f2eb;--bg2:#ece9e1;--bg3:#e2dfd6;
+  --surface:#ffffff;--surface2:#faf9f6;
+  --border:#d8d4ca;--border2:#bfbbb0;
+  --text:#1a1814;--muted:#6b6760;--soft:#a8a49c;--ink:#2c2924;
+  --green:#1a7a4a;--green-bg:#e8f5ee;--green-border:#b8dfc8;
+  --amber:#92580a;--amber-bg:#fef3e0;--amber-border:#f5d48a;
+  --red:#a0281e;--red-bg:#fdecea;--red-border:#f5b8b4;
+  --blue:#1a4fa0;--blue-bg:#e8eef9;--blue-border:#b8caf0;
+  --radius:16px;
+  --shadow:0 2px 12px rgba(26,24,20,0.08);
+  --shadow-lg:0 8px 32px rgba(26,24,20,0.14);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;min-height:100vh;line-height:1.5}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:rgba(245,242,235,0.93);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:62px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;color:var(--ink);letter-spacing:-0.3px;text-decoration:none}
+.logo-icon{width:32px;height:32px;background:var(--ink);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.logo em{font-style:italic;font-family:'Lora',serif;font-weight:400}
+.nav-right{display:flex;align-items:center;gap:10px}
+.stat-pill{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-size:12px;color:var(--muted);font-weight:500}
+.stat-pill strong{color:var(--ink)}
+.btn-add-nav{display:flex;align-items:center;gap:6px;background:var(--ink);color:#fff;border:none;border-radius:100px;padding:9px 20px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:all .18s;letter-spacing:.01em}
+.btn-add-nav:hover{background:#3d3830;transform:translateY(-1px);box-shadow:0 4px 16px rgba(26,24,20,.2)}
+
+/* HERO */
+.hero{padding:3.5rem 2rem 2rem;max-width:1200px;margin:0 auto}
+.hero-tag{display:inline-flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:5px 14px;font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin-bottom:1.25rem}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#1a7a4a;animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-family:'Lora',serif;font-size:clamp(2.2rem,4.5vw,3.6rem);font-weight:400;line-height:1.08;letter-spacing:-1px;color:var(--ink);margin-bottom:.8rem}
+.hero h1 em{font-style:italic;color:var(--green)}
+.hero p{font-size:15px;color:var(--muted);max-width:500px;line-height:1.7;margin-bottom:2rem}
+.hero-stats{display:flex;gap:1rem;flex-wrap:wrap}
+.hstat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:.75rem 1.25rem;min-width:90px}
+.hstat-num{font-size:22px;font-weight:800;color:var(--ink);line-height:1}
+.hstat-label{font-size:11px;color:var(--soft);text-transform:uppercase;letter-spacing:.06em;margin-top:3px;font-weight:600}
+
+/* CONTROLS */
+.controls{padding:0 2rem 1.5rem;max-width:1200px;margin:0 auto}
+.search-row{display:flex;gap:10px;margin-bottom:1rem;align-items:center}
+.search-wrap{flex:1;position:relative}
+.search-wrap input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:11px 16px 11px 42px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .18s}
+.search-wrap input:focus{border-color:var(--border2)}
+.search-wrap input::placeholder{color:var(--soft)}
+.search-ico{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--soft);font-size:16px;pointer-events:none}
+.sort-sel{background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:11px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--muted);outline:none;cursor:pointer;font-weight:500}
+.filter-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.filter-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--soft);margin-right:2px}
+.chip{padding:6px 16px;border-radius:100px;border:1.5px solid var(--border);background:transparent;color:var(--muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .16s;white-space:nowrap}
+.chip:hover{border-color:var(--border2);background:var(--surface);color:var(--ink)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* GRID */
+.main{max-width:1200px;margin:0 auto;padding:0 2rem 4rem}
+.results-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem}
+.rcount{font-size:13px;color:var(--muted);font-weight:500}
+.rcount strong{color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px}
+
+/* CARD */
+.card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:box-shadow .2s,border-color .2s,transform .2s;animation:cardIn .35s ease both;position:relative}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.card:hover{box-shadow:var(--shadow-lg);border-color:var(--border2);transform:translateY(-2px)}
+.card.joined-card{border-color:var(--green-border)}
+.card.editing-card{border-color:var(--blue-border);box-shadow:0 0 0 3px rgba(26,79,160,.1);transform:none}
+.card.editing-card:hover{transform:none;box-shadow:0 0 0 3px rgba(26,79,160,.1)}
+
+/* view mode */
+.view-mode{padding:1.35rem 1.4rem 1.15rem}
+.card.editing-card .view-mode{display:none}
+.edit-mode{display:none;padding:1.2rem 1.4rem}
+.card.editing-card .edit-mode{display:block}
+
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+.subj-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;border:1.5px solid}
+.subj-dot{width:6px;height:6px;border-radius:50%}
+.card-btns{display:flex;gap:6px}
+.iBtn{width:30px;height:30px;border-radius:9px;border:1.5px solid var(--border);background:transparent;color:var(--soft);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:13px;flex-shrink:0}
+.iBtn:hover{background:var(--bg2);color:var(--ink);border-color:var(--border2)}
+.iBtn.e:hover{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-border)}
+.iBtn.d:hover{background:var(--red-bg);color:var(--red);border-color:var(--red-border)}
+.card-title{font-family:'Lora',serif;font-size:17px;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:6px}
+.card-desc{font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:12px}
+.card-meta{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.meta{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted);font-weight:500}
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.avs{display:flex}
+.av{width:26px;height:26px;border-radius:50%;border:2px solid var(--surface);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;margin-left:-7px;flex-shrink:0}
+.av:first-child{margin-left:0}
+.av-more{background:var(--bg2)!important;color:var(--muted)!important;font-size:9px!important;font-weight:600!important}
+.cap{display:flex;align-items:center;gap:8px}
+.cap-bar{width:60px;height:5px;background:var(--bg2);border-radius:100px;overflow:hidden}
+.cap-fill{height:100%;border-radius:100px;transition:width .5s}
+.join-btn{padding:7px 18px;border-radius:100px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .18s;white-space:nowrap;letter-spacing:.01em;border:1.5px solid}
+.jopen{background:var(--ink);color:#fff;border-color:var(--ink)}
+.jopen:hover{background:#3d3830}
+.jjoined{background:var(--green-bg);color:var(--green);border-color:var(--green-border)}
+.jjoined:hover{background:#d8f0e4}
+.jfull{background:var(--bg2);color:var(--soft);border-color:var(--border);cursor:default}
+.jspot{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-border)}
+.jspot:hover{background:#fce9c8}
+
+/* EDIT MODE inside card */
+.em-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.em-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--blue)}
+.em-subj{background:var(--bg);border:1.5px solid var(--border);border-radius:9px;padding:5px 10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--ink);outline:none;cursor:pointer}
+.efl{margin-bottom:10px}
+.efl label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--soft);margin-bottom:4px}
+.efl input,.efl textarea{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:8px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--ink);outline:none;transition:border-color .18s;resize:none}
+.efl input:focus,.efl textarea:focus{border-color:var(--blue-border)}
+.efl textarea{height:66px}
+.efl-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.em-foot{display:flex;gap:8px;margin-top:10px}
+.btn-save{flex:1;background:var(--ink);color:#fff;border:none;border-radius:10px;padding:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s}
+.btn-save:hover{background:#3d3830}
+.btn-cancel-e{background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:10px;padding:9px 16px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-cancel-e:hover{background:var(--bg2)}
+
+/* MODAL */
+.backdrop{position:fixed;inset:0;background:rgba(26,24,20,.55);backdrop-filter:blur(6px);z-index:500;display:none;align-items:center;justify-content:center;padding:1rem}
+.backdrop.open{display:flex}
+.modal{background:var(--surface);border:1.5px solid var(--border);border-radius:22px;padding:2rem;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:mPop .28s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes mPop{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.5rem}
+.modal-title{font-family:'Lora',serif;font-size:24px;font-weight:600;color:var(--ink);line-height:1.2}
+.modal-title em{font-style:italic;color:var(--green)}
+.x-btn{width:32px;height:32px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;flex-shrink:0;margin-top:2px}
+.x-btn:hover{background:var(--bg2);color:var(--ink)}
+.mf{margin-bottom:1rem}
+.mf label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:6px}
+.mf input,.mf textarea,.mf select{width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:11px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .18s;resize:none}
+.mf input:focus,.mf textarea:focus,.mf select:focus{border-color:var(--ink)}
+.mf input::placeholder,.mf textarea::placeholder{color:var(--soft)}
+.mf textarea{height:80px}
+.mf select option{background:#fff}
+.mf-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.subj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sopt{padding:10px 6px;border-radius:12px;border:1.5px solid var(--border);background:transparent;text-align:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:4px}
+.sopt .se{font-size:20px}
+.sopt:hover{border-color:var(--border2);background:var(--bg2);color:var(--ink)}
+.sopt.picked{border-color:var(--ink);background:var(--ink);color:#fff}
+.modal-foot{display:flex;gap:10px;margin-top:1.5rem}
+.btn-post{flex:1;background:var(--ink);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s}
+.btn-post:hover{background:#3d3830;transform:translateY(-1px);box-shadow:0 4px 16px rgba(26,24,20,.2)}
+.btn-dismiss{background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:12px;padding:13px 20px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-dismiss:hover{background:var(--bg2);color:var(--ink)}
+
+/* DELETE */
+.del-modal{max-width:360px}
+.del-body{font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:1.5rem}
+.del-body strong{color:var(--ink)}
+.btn-danger{flex:1;background:var(--red);color:#fff;border:none;border-radius:12px;padding:12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .15s}
+.btn-danger:hover{background:#c4352a}
+
+/* TOAST */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--ink);color:#fff;border-radius:100px;padding:12px 24px;font-size:13px;font-weight:600;z-index:999;display:flex;align-items:center;gap:8px;white-space:nowrap;transition:transform .32s cubic-bezier(.34,1.56,.64,1);box-shadow:var(--shadow-lg)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* EMPTY */
+.empty{grid-column:1/-1;text-align:center;padding:5rem 1rem;color:var(--muted)}
+.empty-ico{font-size:3rem;opacity:.3;margin-bottom:1rem}
+.empty-t{font-family:'Lora',serif;font-size:20px;font-weight:400;color:var(--ink);opacity:.5;margin-bottom:.4rem}
+.empty-s{font-size:13px;line-height:1.6}
+
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg3);border-radius:3px}
+
+@media(max-width:680px){
+  nav,.hero,.controls,.main{padding-left:1rem;padding-right:1rem}
+  .efl-row,.mf-row{grid-template-columns:1fr}
+  .subj-grid{grid-template-columns:repeat(3,1fr)}
+}
+@keyframes shk{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo"><div class="logo-icon">📖</div>Study<em>Nest</em></div>
+  <div class="nav-right">
+    <div class="stat-pill">🟢 <strong id="nav-live">0</strong>&nbsp;live</div>
+    <button class="btn-add-nav" onclick="openAdd()">＋ Add Group</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-tag"><span class="live-dot"></span>Students connecting now</div>
+  <h1>Find your<br><em>study tribe.</em></h1>
+  <p>Browse open groups, join sessions that fit your schedule, or post your own and watch it fill up.</p>
+  <div class="hero-stats">
+    <div class="hstat"><div class="hstat-num" id="s-grp">0</div><div class="hstat-label">Groups</div></div>
+    <div class="hstat"><div class="hstat-num" id="s-stu">0</div><div class="hstat-label">Students</div></div>
+    <div class="hstat"><div class="hstat-num" id="s-spots">0</div><div class="hstat-label">Open Spots</div></div>
+  </div>
+</section>
+
+<div class="controls">
+  <div class="search-row">
+    <div class="search-wrap">
+      <span class="search-ico">⌕</span>
+      <input type="text" id="search" placeholder="Search subject, title, schedule, location…" oninput="render()">
+    </div>
+    <select class="sort-sel" id="sort" onchange="render()">
+      <option value="new">Newest first</option>
+      <option value="mem">Most members</option>
+      <option value="open">Most open spots</option>
+    </select>
+  </div>
+  <div class="filter-row">
+    <span class="filter-label">Filter:</span>
+    <div id="chips"></div>
+  </div>
+</div>
+
+<main class="main">
+  <div class="results-bar">
+    <div class="rcount" id="rcount"></div>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<!-- ADD MODAL -->
+<div class="backdrop" id="add-modal" onclick="bdClick(event,'add-modal')">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Post a <em>new</em> group</div>
+      <button class="x-btn" onclick="closeM('add-modal')">✕</button>
+    </div>
+    <div class="mf"><label>Subject *</label><div class="subj-grid" id="subj-picker"></div></div>
+    <div class="mf"><label>Group Title *</label><input id="m-title" placeholder="e.g. Calculus II – integration techniques"></div>
+    <div class="mf"><label>Description</label><textarea id="m-desc" placeholder="What will you study? Prereqs, goals, materials…"></textarea></div>
+    <div class="mf-row">
+      <div class="mf"><label>Schedule *</label><input id="m-sched" placeholder="e.g. Mon & Wed 6–8pm"></div>
+      <div class="mf"><label>Max Members</label><input type="number" id="m-max" value="6" min="2" max="30"></div>
+    </div>
+    <div class="mf"><label>Location / Platform</label><input id="m-loc" placeholder="Library Rm 204 · Zoom · Discord"></div>
+    <div class="modal-foot">
+      <button class="btn-dismiss" onclick="closeM('add-modal')">Cancel</button>
+      <button class="btn-post" onclick="postGroup()">🚀 Post Group</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM -->
+<div class="backdrop" id="del-modal" onclick="bdClick(event,'del-modal')">
+  <div class="modal del-modal">
+    <div class="modal-head">
+      <div class="modal-title" style="font-size:19px">Delete this group?</div>
+      <button class="x-btn" onclick="closeM('del-modal')">✕</button>
+    </div>
+    <div class="del-body">You're about to delete <strong id="del-name">"…"</strong>. All members will be removed. This can't be undone.</div>
+    <div class="modal-foot">
+      <button class="btn-dismiss" onclick="closeM('del-modal')">Cancel</button>
+      <button class="btn-danger" onclick="doDelete()">🗑 Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="t-ico"></span><span id="t-msg"></span></div>
+
+<script>
+/* ── CONFIG ── */
+const SUBJS=[
+  {id:'math', l:'Maths',    e:'📐', c:'#1a7a4a', bg:'#e8f5ee', br:'#b8dfc8'},
+  {id:'cs',   l:'Comp Sci', e:'💻', c:'#1a4fa0', bg:'#e8eef9', br:'#b8caf0'},
+  {id:'phys', l:'Physics',  e:'⚛️', c:'#5a28a0', bg:'#f0ebfa', br:'#c8b4f0'},
+  {id:'chem', l:'Chemistry',e:'🧪', c:'#92580a', bg:'#fef3e0', br:'#f5d48a'},
+  {id:'bio',  l:'Biology',  e:'🧬', c:'#1a7a4a', bg:'#e8f5ee', br:'#b8dfc8'},
+  {id:'lit',  l:'Literature',e:'📚',c:'#a0281e', bg:'#fdecea', br:'#f5b8b4'},
+  {id:'hist', l:'History',  e:'🏛️', c:'#92580a', bg:'#fef3e0', br:'#f5d48a'},
+  {id:'econ', l:'Economics',e:'📈', c:'#1a4fa0', bg:'#e8eef9', br:'#b8caf0'},
+  {id:'psych',l:'Psychology',e:'🧠',c:'#a0281e', bg:'#fdecea', br:'#f5b8b4'},
+];
+const AVC=['#2563a8','#1a7a4a','#92580a','#5a28a0','#a0281e','#1a6a6a'];
+const NAMES=['Alex K','Sam R','Jordan L','Casey M','Morgan T','Riley B','Quinn A','Blake D','Avery S','Drew N'];
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const mkAvs=n=>{const r=[];for(let i=0;i<Math.min(n,4);i++)r.push({n:rnd(NAMES),c:AVC[i%AVC.length]});return r};
+const ini=n=>n.split(' ').map(w=>w[0]).join('');
+const sbj=id=>SUBJS.find(s=>s.id===id)||SUBJS[0];
+const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const clip=(s,n)=>s.length>n?s.slice(0,n)+'…':s;
+
+/* ── STATE ── */
+let groups=[
+  {id:1,sId:'cs',   title:'Data Structures & Algorithms — LeetCode sprint',    desc:'Arrays, trees, graphs, DP. Whiteboard walkthroughs + daily problem sessions.',sched:'Mon/Wed 6–8pm',  loc:'Discord #ds-algo',    max:6,mem:4,joined:false,avs:mkAvs(4),ts:Date.now()-7200e3},
+  {id:2,sId:'math', title:'Calculus II — integration techniques deep dive',     desc:'U-sub, IBP, trig subs, series. Working through Early Transcendentals ch. 7–11.',sched:'Tue & Thu 7–9pm', loc:'Library Rm 204',       max:5,mem:3,joined:false,avs:mkAvs(3),ts:Date.now()-18000e3},
+  {id:3,sId:'phys', title:'Quantum Mechanics — Griffiths study circle',          desc:'Chapters 2–5. Wave functions, Schrödinger eq, harmonic oscillator.',            sched:'Fri 4–6pm',       loc:'Zoom',                max:4,mem:2,joined:false,avs:mkAvs(2),ts:Date.now()-32400e3},
+  {id:4,sId:'bio',  title:'Cell Biology & Genetics exam prep',                   desc:'Mitosis, meiosis, Mendelian genetics, molecular pathways. Diagram sessions.',     sched:'Sun 3–5pm',       loc:'Science Bldg B12',    max:8,mem:6,joined:false,avs:mkAvs(6),ts:Date.now()-50400e3},
+  {id:5,sId:'lit',  title:'Modernist Fiction — Woolf, Joyce, Kafka',             desc:'30-page weekly readings followed by deep discussion. No late joiners!',           sched:'Sat 11am–1pm',    loc:'Coffee & Books Café',  max:7,mem:5,joined:false,avs:mkAvs(5),ts:Date.now()-86400e3},
+  {id:6,sId:'econ', title:'Microeconomics finals blitz',                          desc:'Supply & demand, elasticity, market structures, game theory. Past papers.',       sched:'Thu 6:30–8:30pm', loc:'Zoom',                max:6,mem:3,joined:false,avs:mkAvs(3),ts:Date.now()-108000e3},
+];
+let nid=7,filter='all',delId=null,pickSbj=SUBJS[0].id;
+
+/* ── RENDER ── */
+function visib(){
+  const q=(document.getElementById('search').value||'').toLowerCase();
+  const sort=document.getElementById('sort').value;
+  let g=groups.filter(x=>{
+    const fF=filter==='all'||x.sId===filter;
+    const fQ=!q||x.title.toLowerCase().includes(q)||(x.desc||'').toLowerCase().includes(q)||sbj(x.sId).l.toLowerCase().includes(q)||(x.sched||'').toLowerCase().includes(q)||(x.loc||'').toLowerCase().includes(q);
+    return fF&&fQ;
+  });
+  if(sort==='mem')g.sort((a,b)=>b.mem-a.mem);
+  else if(sort==='open')g.sort((a,b)=>(a.mem/a.max)-(b.mem/b.max));
+  else g.sort((a,b)=>b.ts-a.ts);
+  return g;
+}
+
+function renderChips(){
+  const ids=[...new Set(groups.map(g=>g.sId))];
+  const fs=[{id:'all',l:'All groups'},...ids.map(i=>({id:i,l:sbj(i).l+' '+sbj(i).e}))];
+  document.getElementById('chips').innerHTML=fs.map(f=>`<button class="chip${filter===f.id?' on':''}" onclick="setF('${f.id}')">${f.l}</button>`).join('');
+}
+
+function setF(id){filter=id;render()}
+
+function render(){
+  renderChips();
+  const shown=visib();
+  const tot=groups.reduce((s,g)=>s+g.mem,0);
+  const spots=groups.reduce((s,g)=>s+Math.max(0,g.max-g.mem),0);
+  document.getElementById('s-grp').textContent=groups.length;
+  document.getElementById('s-stu').textContent=tot;
+  document.getElementById('s-spots').textContent=spots;
+  document.getElementById('nav-live').textContent=groups.length;
+  document.getElementById('rcount').innerHTML=`<strong>${shown.length}</strong> group${shown.length!==1?'s':''} shown`;
+
+  if(!shown.length){
+    document.getElementById('grid').innerHTML=`<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">No groups found</div><div class="empty-s">Try different search terms — or be the first to post!</div></div>`;
+    return;
+  }
+  document.getElementById('grid').innerHTML=shown.map((g,i)=>cardHTML(g,i)).join('');
+}
+
+/* ── CARD ── */
+function cardHTML(g,i){
+  const s=sbj(g.sId);
+  const pct=Math.round((g.mem/g.max)*100);
+  const full=g.mem>=g.max;
+  const spots=g.max-g.mem;
+  const fc=pct>=90?'#a0281e':pct>=70?'#92580a':'#1a7a4a';
+
+  const avH=g.avs.slice(0,3).map(a=>`<div class="av" style="background:${a.c}">${ini(a.n)}</div>`).join('')
+    +(g.avs.length>3?`<div class="av av-more" style="background:#e2dfd6;color:#6b6760">+${g.avs.length-3}</div>`:'');
+
+  let jc='join-btn ',jt='';
+  if(g.joined){jc+='jjoined';jt='✓ Joined'}
+  else if(full){jc+='jfull';jt='Full'}
+  else if(spots===1){jc+='jspot';jt='1 spot left!'}
+  else{jc+='jopen';jt='Join Group'}
+
+  /* edit-mode fields pre-filled */
+  const eSubjs=SUBJS.map(ss=>`<option value="${ss.id}"${g.sId===ss.id?' selected':''}>${ss.e} ${ss.l}</option>`).join('');
+
+  return `<div class="card${g.joined?' joined-card':''}" id="c${g.id}" style="animation-delay:${i*.045}s">
+
+  <!-- VIEW -->
+  <div class="view-mode">
+    <div class="card-head">
+      <span class="subj-badge" style="background:${s.bg};border-color:${s.br};color:${s.c}">
+        <span class="subj-dot" style="background:${s.c}"></span>${s.e} ${s.l}
+      </span>
+      <div class="card-btns">
+        <button class="iBtn e" title="Edit this group" onclick="startEdit(${g.id})">✏️</button>
+        <button class="iBtn d" title="Delete this group" onclick="askDel(${g.id})">🗑</button>
+      </div>
+    </div>
+    <div class="card-title">${esc(g.title)}</div>
+    <div class="card-desc">${esc(g.desc||'No description yet.')}</div>
+    <div class="card-meta">
+      <span class="meta">🕐 ${esc(g.sched)}</span>
+      ${g.loc?`<span class="meta">📍 ${esc(g.loc)}</span>`:''}
+      <span class="meta">👥 ${g.mem}/${g.max}</span>
+    </div>
+    <div class="card-foot">
+      <div class="avs">${avH}</div>
+      <div class="cap">
+        <div class="cap-bar"><div class="cap-fill" style="width:${pct}%;background:${fc}"></div></div>
+        <button class="${jc}" onclick="toggleJoin(${g.id},event)">${jt}</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT -->
+  <div class="edit-mode" id="em${g.id}">
+    <div class="em-header">
+      <span class="em-label">✏️ Editing group</span>
+      <select class="em-subj" id="es-${g.id}">${eSubjs}</select>
+    </div>
+    <div class="efl"><label>Title *</label><input id="et-${g.id}" value="${esc(g.title)}"></div>
+    <div class="efl"><label>Description</label><textarea id="ed-${g.id}">${esc(g.desc||'')}</textarea></div>
+    <div class="efl-row">
+      <div class="efl"><label>Schedule</label><input id="esc-${g.id}" value="${esc(g.sched)}"></div>
+      <div class="efl"><label>Max Members</label><input type="number" id="em-${g.id}" value="${g.max}" min="2" max="30"></div>
+    </div>
+    <div class="efl"><label>Location</label><input id="el-${g.id}" value="${esc(g.loc||'')}"></div>
+    <div class="em-foot">
+      <button class="btn-cancel-e" onclick="cancelEdit(${g.id})">Cancel</button>
+      <button class="btn-save" onclick="saveEdit(${g.id})">💾 Save Changes</button>
+    </div>
+  </div>
+
+</div>`;
+}
+
+/* ── JOIN / LEAVE ── */
+function toggleJoin(id,e){
+  e&&e.stopPropagation();
+  const g=groups.find(x=>x.id===id);if(!g)return;
+  if(g.joined){
+    g.joined=false;g.mem=Math.max(0,g.mem-1);g.avs=g.avs.filter(a=>a.n!=='You');
+    toast('👋',`Left "${clip(g.title,30)}"`);
+  } else {
+    if(g.mem>=g.max)return;
+    g.joined=true;g.mem++;g.avs.push({n:'You',c:'#1a7a4a'});
+    toast('🎉',`Joined "${clip(g.title,30)}"`);
+  }
+  render();
+}
+
+/* ── INLINE EDIT ── */
+function startEdit(id){
+  // close others
+  document.querySelectorAll('.card.editing-card').forEach(c=>{
+    const cid=parseInt(c.id.slice(1));if(cid!==id)cancelEdit(cid);
+  });
+  document.getElementById('c'+id).classList.add('editing-card');
+}
+function cancelEdit(id){
+  const el=document.getElementById('c'+id);
+  if(el)el.classList.remove('editing-card');
+}
+function saveEdit(id){
+  const title=(document.getElementById('et-'+id).value||'').trim();
+  if(!title){shake('et-'+id);return}
+  const g=groups.find(x=>x.id===id);if(!g)return;
+  g.sId=document.getElementById('es-'+id).value;
+  g.title=title;
+  g.desc=(document.getElementById('ed-'+id).value||'').trim();
+  g.sched=(document.getElementById('esc-'+id).value||'').trim();
+  g.max=Math.max(g.mem,parseInt(document.getElementById('em-'+id).value)||6);
+  g.loc=(document.getElementById('el-'+id).value||'').trim();
+  toast('✅',`"${clip(g.title,28)}" updated`);
+  render();
+}
+
+/* ── DELETE ── */
+function askDel(id){
+  delId=id;
+  const g=groups.find(x=>x.id===id);
+  document.getElementById('del-name').textContent=`"${clip(g?.title||'this group',40)}"`;
+  document.getElementById('del-modal').classList.add('open');
+}
+function doDelete(){
+  const g=groups.find(x=>x.id===delId);
+  groups=groups.filter(x=>x.id!==delId);
+  closeM('del-modal');
+  toast('🗑',`Deleted "${clip(g?.title||'group',28)}"`);
+  render();
+}
+
+/* ── ADD MODAL ── */
+function buildPicker(){
+  document.getElementById('subj-picker').innerHTML=SUBJS.map(s=>
+    `<button class="sopt${pickSbj===s.id?' picked':''}" onclick="pickS('${s.id}')"><span class="se">${s.e}</span>${s.l}</button>`
+  ).join('');
+}
+function pickS(id){pickSbj=id;buildPicker()}
+function openAdd(){
+  pickSbj=SUBJS[0].id;buildPicker();
+  ['m-title','m-desc','m-sched','m-loc'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('m-max').value=6;
+  document.getElementById('add-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('m-title').focus(),120);
+}
+function postGroup(){
+  const title=(document.getElementById('m-title').value||'').trim();
+  const sched=(document.getElementById('m-sched').value||'').trim();
+  if(!title){shake('m-title');return}
+  if(!sched){shake('m-sched');return}
+  groups.unshift({
+    id:nid++,sId:pickSbj,title,
+    desc:(document.getElementById('m-desc').value||'').trim(),
+    sched,loc:(document.getElementById('m-loc').value||'').trim(),
+    max:parseInt(document.getElementById('m-max').value)||6,
+    mem:1,joined:true,avs:[{n:'You',c:'#1a7a4a'}],ts:Date.now()
+  });
+  closeM('add-modal');filter='all';
+  toast('🚀','Group posted! Others can join now.');render();
+}
+
+/* ── HELPERS ── */
+function closeM(id){document.getElementById(id).classList.remove('open')}
+function bdClick(e,id){if(e.target===document.getElementById(id))closeM(id)}
+function shake(id){const el=document.getElementById(id);if(!el)return;el.style.animation='none';el.offsetHeight;el.style.animation='shk .35s ease'}
+let _tt;
+function toast(ico,msg){
+  const t=document.getElementById('toast');
+  document.getElementById('t-ico').textContent=ico;
+  document.getElementById('t-msg').textContent=msg;
+  t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>t.classList.remove('show'),2800);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeM('add-modal');closeM('del-modal')}});
+
+render();
+</script>
+</body>
+</html>
